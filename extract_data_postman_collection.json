@@ -1,0 +1,990 @@
+{
+	"info": {
+		"_postman_id": "32cf67f6-4de0-4c6a-ac50-c7cf3ef55f8d",
+		"name": "Extract data to chain requests",
+		"description": "**Extract data from the response**. This can be useful to capture authorization, session, or cookie data or to transform and parse information available within the response body to chain requests and use this data in a subsequent request.\n\nHere's a [step-by-step tutorial](https://blog.getpostman.com/2018/03/19/how-to-make-money-using-postman-chaining-requests/) showing how to do this.\n\n* Extract response body data\n* Extract cookie data\n* Extract session and header data\n* Extract XML and transform to JSON\n\n![[test script](https://i.imgur.com/zVrV2qS.png)](https://i.imgur.com/zVrV2qS.png)\n\n# Get started\n* **Set up an environment** so that you can save information and then use it in subsequent requests. Although you can use other types of variables, one of the more common ways of chaining requests is by using environment variables. Learn more about [managing environments](https://learning.getpostman.com/docs/postman/environments_and_globals/manage_environments). \n* **Run a folder or collection** using the [collection runner](https://learning.getpostman.com/docs/postman/collection_runs/starting_a_collection_run). You can also step through each request by hitting that blue **Send** button manually, but don't forget about the collection runner. Running folders or collections with the runner will automatically execute all your requests in a predetermined order.\n \n![[using environment variables](https://i.imgur.com/WB1OWtf.png)](https://i.imgur.com/WB1OWtf.png)\n\n# Next steps\nGot the hang of chaining requests? There's a bunch more you can do with scripts.\n* **Do setup and teardown for testing**. For example, you can do calculations to use in the main request or [send asynchronous requests](https://blog.getpostman.com/2017/10/03/send-asynchronous-requests-with-postmans-pm-api/). Tests scripts are the cornerstone of [testing in Postman](https://blog.getpostman.com/2017/10/25/writing-tests-in-postman/) – to validate your endpoint is working as expected.\n* **Direct the next request to be called** based on the results of the server response. Using basic JavaScript, you can then use [`postman.setNextRequest(\"Request name\")`](https://learning.getpostman.com/docs/postman/scripts/branching_and_looping/) to guide the sequence of the remaining API calls.",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "18374289"
+	},
+	"item": [
+		{
+			"name": "Extract response data",
+			"item": [
+				{
+					"name": "Cat facts capture response",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// save response from the response body so we can access this data in this scripting area",
+									"let response = pm.response.json();",
+									"",
+									"// create a new array of just the breeds returned in the response body",
+									"let responseBreeds = response.data.map(cat => cat.breed);",
+									"console.log(\"breedsFromCatFacts\", responseBreeds);",
+									"",
+									"// save this information as an environment variable, so we can access this info in subsequent requests",
+									"// remember to encode and serialize this data properly",
+									"pm.environment.set(\"breeds\", JSON.stringify(responseBreeds));",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://catfact.ninja/breeds?limit=3",
+							"protocol": "https",
+							"host": [
+								"catfact",
+								"ninja"
+							],
+							"path": [
+								"breeds"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						},
+						"description": "Under the **Tests** tab, I can use the [`pm.*` APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference) allowing me access to the response body. In this example, let's parse some information from the response body, and then save this information as an environment variable so we can access this info in a subsequent request."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://catfact.ninja/breeds?limit=3",
+									"protocol": "https",
+									"host": [
+										"catfact",
+										"ninja"
+									],
+									"path": [
+										"breeds"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 18:46:06 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "300"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "297"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"total\": 98,\n    \"per_page\": \"3\",\n    \"current_page\": 1,\n    \"last_page\": 33,\n    \"next_page_url\": \"https://catfact.ninja/breeds?page=2\",\n    \"prev_page_url\": null,\n    \"from\": 1,\n    \"to\": 3,\n    \"data\": [\n        {\n            \"breed\": \"Abyssinian\",\n            \"country\": \"Ethiopia\",\n            \"origin\": \"Natural/Standard\",\n            \"coat\": \"Short\",\n            \"pattern\": \"Ticked\"\n        },\n        {\n            \"breed\": \"Aegean\",\n            \"country\": \"Greece\",\n            \"origin\": \"Natural/Standard\",\n            \"coat\": \"Semi-long\",\n            \"pattern\": \"Bi- or tri-colored\"\n        },\n        {\n            \"breed\": \"American Curl\",\n            \"country\": \"United States\",\n            \"origin\": \"Mutation\",\n            \"coat\": \"Short/Long\",\n            \"pattern\": \"All\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Echo response",
+					"event": [
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// under the scripting areas (Pre-request Script and Tests tabs), use this type of syntax to access variables",
+									"// https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference",
+									"// remember to deserialize or decode the data properly",
+									"let breedsFromEnvironment = JSON.parse(pm.environment.get(\"breeds\"));",
+									"console.log(\"breedsFromEchoResponse\", breedsFromEnvironment);"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get?foo1={{breeds}}&foo2=bar2",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
+							],
+							"query": [
+								{
+									"key": "foo1",
+									"value": "{{breeds}}",
+									"description": "Use the double curly braces syntax like `{{this}}` in the text areas of the request builder"
+								},
+								{
+									"key": "foo2",
+									"value": "bar2"
+								}
+							]
+						},
+						"description": "We can use variables using the double curly braces syntax - like `{{this}}` in the text areas of the request builder. Alternatively, we can use variables under the scripting areas (**Pre-request Script** and **Tests** tabs) using syntax for the [`pm.*` APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference)."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://postman-echo.com/get?foo1={{arrayOfBreeds}}&foo2=bar2",
+									"protocol": "https",
+									"host": [
+										"postman-echo",
+										"com"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "foo1",
+											"value": "{{arrayOfBreeds}}",
+											"description": "Use the double curly braces syntax like `{{this}}` in the text areas of the request builder"
+										},
+										{
+											"key": "foo2",
+											"value": "bar2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 19:08:48 GMT"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"222-qBDC6r00ZPvNb1G100hjB4i6Ouk\""
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "set-cookie",
+									"value": "sails.sid=s%3APfqPtn4WoNt4edREsbscn5Of37blyyxT.fEtz%2Be5Iu0%2FT85TdI64DKcZc47x1mTUi%2F1nLSl2dVZc; Path=/; HttpOnly"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Length",
+									"value": "395"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"args\": {\n        \"foo1\": \"[\\\"Abyssinian\\\",\\\"Aegean\\\",\\\"American Curl\\\"]\",\n        \"foo2\": \"bar2\"\n    },\n    \"headers\": {\n        \"x-forwarded-proto\": \"https\",\n        \"host\": \"postman-echo.com\",\n        \"accept\": \"*/*\",\n        \"accept-encoding\": \"gzip, deflate\",\n        \"cache-control\": \"no-cache\",\n        \"cookie\": \"sails.sid=s%3A4jPT7oG6zJGyv4wd-tDi0MEcyCVl4uGk.5g0CcNgON9luRpDUOq4KfDRzXt9hly6CXSOzDwBrICo\",\n        \"postman-token\": \"dbc8d655-f65d-45dc-9be8-ff0275a0bfd1\",\n        \"user-agent\": \"PostmanRuntime/7.11.0\",\n        \"x-forwarded-port\": \"443\"\n    },\n    \"url\": \"https://postman-echo.com/get?foo1=[%22Abyssinian%22,%22Aegean%22,%22American%20Curl%22]&foo2=bar2\"\n}"
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Extract cookie data",
+			"item": [
+				{
+					"name": "Echo capture cookie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// retrieve all cookies from the response so we can access this data in this scripting area",
+									"// https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference#pmcookies",
+									"let cookies = pm.cookies.toObject();",
+									"console.log(\"cookiesFromObject\", cookies);",
+									"",
+									"// retrieve specified cookie",
+									"let sailsCookie = pm.cookies.get(\"sails.sid\");",
+									"console.log(\"cookieCaptured\", sailsCookie);",
+									"",
+									"// write a test that determines if a particular cookie key is present",
+									"pm.test(\"there's my cookie\", function () {",
+									"    pm.cookies.has(\"sails.sid\");",
+									"});",
+									"",
+									"// save information as an environment variable, so we can access it in subsequent requests",
+									"// remember to encode and serialize this data properly",
+									"pm.environment.set(\"cookies\", JSON.stringify(cookies));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
+							],
+							"query": [
+								{
+									"key": "foo1",
+									"value": "bar1"
+								},
+								{
+									"key": "foo2",
+									"value": "bar2"
+								}
+							]
+						},
+						"description": "Under the **Tests** tab, I can use the [pm.* APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference) allowing me access to the response cookies. In this example, let's parse some information from the response, and then save this information as an environment variable so we can access this info in a subsequent request. There's [a bunch of stuff you can do with cookies in Postman](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference#pmcookies)."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+									"protocol": "https",
+									"host": [
+										"postman-echo",
+										"com"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "foo1",
+											"value": "bar1"
+										},
+										{
+											"key": "foo2",
+											"value": "bar2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 19:16:34 GMT"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c8-SQV0OEkTHeeMM6PotRB9cxlFpoI\""
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "set-cookie",
+									"value": "sails.sid=s%3ABH_H3EGNd1Nmt_fTsgYovCKBH4YWhJ4K.dnU6C60KDRVmkdAlXGfBN2%2FgYSfT%2FEtTn%2FFukLGk76A; Path=/; HttpOnly"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Length",
+									"value": "339"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"args\": {\n        \"foo1\": \"bar1\",\n        \"foo2\": \"bar2\"\n    },\n    \"headers\": {\n        \"x-forwarded-proto\": \"https\",\n        \"host\": \"postman-echo.com\",\n        \"accept\": \"*/*\",\n        \"accept-encoding\": \"gzip, deflate\",\n        \"cache-control\": \"no-cache\",\n        \"cookie\": \"sails.sid=s%3AdrwixXLS9Pm3rQhXCZTY72n-RaAMpLVC.h4uL3AS0Xic3peQgCe0w8l77D4yMXFd5GPiibfrRg4s\",\n        \"postman-token\": \"c1a90054-6180-4b82-9d09-f57d777b62f9\",\n        \"user-agent\": \"PostmanRuntime/7.11.0\",\n        \"x-forwarded-port\": \"443\"\n    },\n    \"url\": \"https://postman-echo.com/get?foo1=bar1&foo2=bar2\"\n}"
+						}
+					]
+				},
+				{
+					"name": "Echo cookie",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// under the scripting areas (Pre-request Script and Tests tabs), use this type of syntax to access variables",
+									"// https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference",
+									"// remember to deserialize or decode the data properly",
+									"let cookie = JSON.parse(pm.environment.get(\"cookies\"));",
+									"console.log(\"cookieFromEchoCookie\", cookie);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get?foo1={{cookies}}&foo2=bar2",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
+							],
+							"query": [
+								{
+									"key": "foo1",
+									"value": "{{cookies}}"
+								},
+								{
+									"key": "foo2",
+									"value": "bar2"
+								}
+							]
+						},
+						"description": "We can use variables using the double curly braces syntax - like `{{this}}` in the text areas of the request builder. Alternatively, we can use variables under the scripting areas (**Pre-request Script** and **Tests** tabs) using syntax for the [`pm.*` APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference)."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+									"protocol": "https",
+									"host": [
+										"postman-echo",
+										"com"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "foo1",
+											"value": "bar1"
+										},
+										{
+											"key": "foo2",
+											"value": "bar2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 19:16:34 GMT"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c8-SQV0OEkTHeeMM6PotRB9cxlFpoI\""
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "set-cookie",
+									"value": "sails.sid=s%3ABH_H3EGNd1Nmt_fTsgYovCKBH4YWhJ4K.dnU6C60KDRVmkdAlXGfBN2%2FgYSfT%2FEtTn%2FFukLGk76A; Path=/; HttpOnly"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Length",
+									"value": "339"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"args\": {\n        \"foo1\": \"bar1\",\n        \"foo2\": \"bar2\"\n    },\n    \"headers\": {\n        \"x-forwarded-proto\": \"https\",\n        \"host\": \"postman-echo.com\",\n        \"accept\": \"*/*\",\n        \"accept-encoding\": \"gzip, deflate\",\n        \"cache-control\": \"no-cache\",\n        \"cookie\": \"sails.sid=s%3AdrwixXLS9Pm3rQhXCZTY72n-RaAMpLVC.h4uL3AS0Xic3peQgCe0w8l77D4yMXFd5GPiibfrRg4s\",\n        \"postman-token\": \"c1a90054-6180-4b82-9d09-f57d777b62f9\",\n        \"user-agent\": \"PostmanRuntime/7.11.0\",\n        \"x-forwarded-port\": \"443\"\n    },\n    \"url\": \"https://postman-echo.com/get?foo1=bar1&foo2=bar2\"\n}"
+						}
+					]
+				}
+			],
+			"event": [
+				{
+					"listen": "prerequest",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				},
+				{
+					"listen": "test",
+					"script": {
+						"type": "text/javascript",
+						"exec": [
+							""
+						]
+					}
+				}
+			]
+		},
+		{
+			"name": "Extract session data",
+			"item": [
+				{
+					"name": "Cat facts capture session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"// retrieve all headers from the response so we can access this data in this scripting area",
+									"// https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference#pmresponse",
+									"let headers = pm.response.headers;",
+									"console.log(\"headersList\", headers);",
+									"",
+									"// filter through headers to return value of specific header",
+									"let specificHeader = pm.response.headers.filter(header => header.key == \"Date\");",
+									"console.log(\"headerCaptured\", specificHeader);",
+									"",
+									"// write a test that determines if a particular header key is present",
+									"pm.test(\"there's my header\", function () {",
+									"    pm.response.to.have.header(\"date\");",
+									"});",
+									"",
+									"// save information as an environment variable, so we can access it in subsequent requests",
+									"// remember to encode and serialize this data properly",
+									"pm.environment.set(\"headers\", JSON.stringify(headers));"
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://catfact.ninja/breeds?limit=3",
+							"protocol": "https",
+							"host": [
+								"catfact",
+								"ninja"
+							],
+							"path": [
+								"breeds"
+							],
+							"query": [
+								{
+									"key": "limit",
+									"value": "3"
+								}
+							]
+						},
+						"description": "Under the **Tests** tab, I can use the [pm.* APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference) allowing me access to the session data. In this example, let's parse some information from the response, and then save this information as an environment variable so we can access this info in a subsequent request. There's [a bunch of stuff you can do with session data in Postman](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference#pmresponse)."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://catfact.ninja/breeds?limit=3",
+									"protocol": "https",
+									"host": [
+										"catfact",
+										"ninja"
+									],
+									"path": [
+										"breeds"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "3"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json"
+								},
+								{
+									"key": "Transfer-Encoding",
+									"value": "chunked"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Cache-Control",
+									"value": "no-cache, private"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 18:46:06 GMT"
+								},
+								{
+									"key": "X-RateLimit-Limit",
+									"value": "300"
+								},
+								{
+									"key": "X-RateLimit-Remaining",
+									"value": "297"
+								},
+								{
+									"key": "X-Frame-Options",
+									"value": "SAMEORIGIN"
+								},
+								{
+									"key": "X-XSS-Protection",
+									"value": "1; mode=block"
+								},
+								{
+									"key": "X-Content-Type-Options",
+									"value": "nosniff"
+								},
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"total\": 98,\n    \"per_page\": \"3\",\n    \"current_page\": 1,\n    \"last_page\": 33,\n    \"next_page_url\": \"https://catfact.ninja/breeds?page=2\",\n    \"prev_page_url\": null,\n    \"from\": 1,\n    \"to\": 3,\n    \"data\": [\n        {\n            \"breed\": \"Abyssinian\",\n            \"country\": \"Ethiopia\",\n            \"origin\": \"Natural/Standard\",\n            \"coat\": \"Short\",\n            \"pattern\": \"Ticked\"\n        },\n        {\n            \"breed\": \"Aegean\",\n            \"country\": \"Greece\",\n            \"origin\": \"Natural/Standard\",\n            \"coat\": \"Semi-long\",\n            \"pattern\": \"Bi- or tri-colored\"\n        },\n        {\n            \"breed\": \"American Curl\",\n            \"country\": \"United States\",\n            \"origin\": \"Mutation\",\n            \"coat\": \"Short/Long\",\n            \"pattern\": \"All\"\n        }\n    ]\n}"
+						}
+					]
+				},
+				{
+					"name": "Echo session",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// under the scripting areas (Pre-request Script and Tests tabs), use this type of syntax to access variables",
+									"// https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference",
+									"// remember to deserialize or decode the data properly",
+									"let headers = JSON.parse(pm.environment.get(\"headers\"));",
+									"let oneHeader = headers.pop();",
+									"console.log(\"headerFromEchoSession\", oneHeader);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get?foo1={{headers}}&foo2=bar2",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
+							],
+							"query": [
+								{
+									"key": "foo1",
+									"value": "{{headers}}"
+								},
+								{
+									"key": "foo2",
+									"value": "bar2"
+								}
+							]
+						},
+						"description": "We can use variables using the double curly braces syntax - like `{{this}}` in the text areas of the request builder. Alternatively, we can use variables under the scripting areas (**Pre-request Script** and **Tests** tabs) using syntax for the [`pm.*` APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference)."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+									"protocol": "https",
+									"host": [
+										"postman-echo",
+										"com"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "foo1",
+											"value": "bar1"
+										},
+										{
+											"key": "foo2",
+											"value": "bar2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 19:16:34 GMT"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c8-SQV0OEkTHeeMM6PotRB9cxlFpoI\""
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "set-cookie",
+									"value": "sails.sid=s%3ABH_H3EGNd1Nmt_fTsgYovCKBH4YWhJ4K.dnU6C60KDRVmkdAlXGfBN2%2FgYSfT%2FEtTn%2FFukLGk76A; Path=/; HttpOnly"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Length",
+									"value": "339"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"args\": {\n        \"foo1\": \"bar1\",\n        \"foo2\": \"bar2\"\n    },\n    \"headers\": {\n        \"x-forwarded-proto\": \"https\",\n        \"host\": \"postman-echo.com\",\n        \"accept\": \"*/*\",\n        \"accept-encoding\": \"gzip, deflate\",\n        \"cache-control\": \"no-cache\",\n        \"cookie\": \"sails.sid=s%3AdrwixXLS9Pm3rQhXCZTY72n-RaAMpLVC.h4uL3AS0Xic3peQgCe0w8l77D4yMXFd5GPiibfrRg4s\",\n        \"postman-token\": \"c1a90054-6180-4b82-9d09-f57d777b62f9\",\n        \"user-agent\": \"PostmanRuntime/7.11.0\",\n        \"x-forwarded-port\": \"443\"\n    },\n    \"url\": \"https://postman-echo.com/get?foo1=bar1&foo2=bar2\"\n}"
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "XML to JSON",
+			"item": [
+				{
+					"name": "Echo xml",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									""
+								],
+								"type": "text/javascript"
+							}
+						},
+						{
+							"listen": "prerequest",
+							"script": {
+								"exec": [
+									"// under the scripting areas (Pre-request Script and Tests tabs), use this type of syntax to access variables",
+									"// https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference",
+									"// remember to deserialize or decode the data properly",
+									"let holidays = JSON.parse(pm.environment.get(\"holidays\"));",
+									"let oneHoliday = holidays.pop();",
+									"console.log(\"holidayFromXml\", oneHoliday);",
+									""
+								],
+								"type": "text/javascript"
+							}
+						}
+					],
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "https://postman-echo.com/get?foo1={{holidays}}&foo2=bar2",
+							"protocol": "https",
+							"host": [
+								"postman-echo",
+								"com"
+							],
+							"path": [
+								"get"
+							],
+							"query": [
+								{
+									"key": "foo1",
+									"value": "{{holidays}}"
+								},
+								{
+									"key": "foo2",
+									"value": "bar2"
+								}
+							]
+						},
+						"description": "We can use variables using the double curly braces syntax - like `{{this}}` in the text areas of the request builder. Alternatively, we can use variables under the scripting areas (**Pre-request Script** and **Tests** tabs) using syntax for the [`pm.*` APIs](https://learning.getpostman.com/docs/postman/scripts/postman_sandbox_api_reference)."
+					},
+					"response": [
+						{
+							"name": "Successful response",
+							"originalRequest": {
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "https://postman-echo.com/get?foo1=bar1&foo2=bar2",
+									"protocol": "https",
+									"host": [
+										"postman-echo",
+										"com"
+									],
+									"path": [
+										"get"
+									],
+									"query": [
+										{
+											"key": "foo1",
+											"value": "bar1"
+										},
+										{
+											"key": "foo2",
+											"value": "bar2"
+										}
+									]
+								}
+							},
+							"status": "OK",
+							"code": 200,
+							"_postman_previewlanguage": "json",
+							"header": [
+								{
+									"key": "Content-Encoding",
+									"value": "gzip"
+								},
+								{
+									"key": "Content-Type",
+									"value": "application/json; charset=utf-8"
+								},
+								{
+									"key": "Date",
+									"value": "Tue, 30 Apr 2019 19:16:34 GMT"
+								},
+								{
+									"key": "ETag",
+									"value": "W/\"1c8-SQV0OEkTHeeMM6PotRB9cxlFpoI\""
+								},
+								{
+									"key": "Server",
+									"value": "nginx"
+								},
+								{
+									"key": "set-cookie",
+									"value": "sails.sid=s%3ABH_H3EGNd1Nmt_fTsgYovCKBH4YWhJ4K.dnU6C60KDRVmkdAlXGfBN2%2FgYSfT%2FEtTn%2FFukLGk76A; Path=/; HttpOnly"
+								},
+								{
+									"key": "Vary",
+									"value": "Accept-Encoding"
+								},
+								{
+									"key": "Content-Length",
+									"value": "339"
+								},
+								{
+									"key": "Connection",
+									"value": "keep-alive"
+								}
+							],
+							"cookie": [],
+							"body": "{\n    \"args\": {\n        \"foo1\": \"bar1\",\n        \"foo2\": \"bar2\"\n    },\n    \"headers\": {\n        \"x-forwarded-proto\": \"https\",\n        \"host\": \"postman-echo.com\",\n        \"accept\": \"*/*\",\n        \"accept-encoding\": \"gzip, deflate\",\n        \"cache-control\": \"no-cache\",\n        \"cookie\": \"sails.sid=s%3AdrwixXLS9Pm3rQhXCZTY72n-RaAMpLVC.h4uL3AS0Xic3peQgCe0w8l77D4yMXFd5GPiibfrRg4s\",\n        \"postman-token\": \"c1a90054-6180-4b82-9d09-f57d777b62f9\",\n        \"user-agent\": \"PostmanRuntime/7.11.0\",\n        \"x-forwarded-port\": \"443\"\n    },\n    \"url\": \"https://postman-echo.com/get?foo1=bar1&foo2=bar2\"\n}"
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	]
+}
